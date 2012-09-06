@@ -14,15 +14,25 @@ moves (dir:ms) (x,y) = moves ms (move dir (x,y))
 data Nat = Zero | Succ Nat
      deriving (Eq, Show, Read, Ord) 
 
---multiplyNat :: Nat -> Nat -> Nat
---multiplyNat Zero _ = Zero
---multiplyNat _ Zero = Zero
---multiplyNat x (Succ Zero)    = x
---multiplyNat x y	   = x + multiplyNat x (y-1)
+-- from slides:
+add x Zero = x
+add x (Succ n) = add (Succ x) n
 
--- Do these
+multiply :: Nat -> Nat -> Nat
+multiply _ Zero = Zero
+multiply Zero _ = Zero
+multiply x (Succ Zero) = x
+multiply (Succ x) y = add y (multiply x y)
+
 --nat2int
+nat2int :: Nat -> Int
+nat2int Zero = 0
+nat2int (Succ x) = 1 + nat2int x
+
 --int2nat
+int2nat :: Int -> Nat
+int2nat 0 = Zero
+int2nat n = Succ (int2nat (n-1))
 
 data Tree = Leaf | Node Int Tree Tree
 --insert :: Int -> Tree -> Tree
