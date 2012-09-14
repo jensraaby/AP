@@ -1,3 +1,4 @@
+-- Pos is a synonym for Int,Int
 type Pos = (Int, Int)
 data Direction = North | South | East | West
 
@@ -77,7 +78,7 @@ instance Show Expr where
 
 -- Morse
 --data Morse = Empty | Dot Morse | Dash Morse deriving (Show
-encodings :: [(Char,[Char])]
+encodings :: [(Char,String)]
 encodings = [('A',".-")
 			,('B',"-...")
 			,('C',"-.-.")
@@ -104,7 +105,54 @@ encodings = [('A',".-")
 			,('X',"-..-")
 			,('Y',"-.--")
 			,('Z',"--..")]
---encode :: String -> String
---encode "" = ""
----encode (c:cs) = morse 
---	where morse = lookup c encodings
+-- encode :: Char -> String
+-- encode ' ' = ""
+-- encode c = enc
+--     where
+--         [(c,enc) <- encodings]
+
+
+
+
+
+
+
+class Sizeable t where
+    size :: t -> Int
+    --anything sizeable has a function size
+instance Sizeable Int where
+    size _ = 1
+
+-- instance Sizeable [a] where
+--     size etc = length etc
+    
+instance Sizeable a => Sizeable [a] where
+    -- if type a is sizeable, then a list of type a is also sizeable
+    size [] = 0
+    size (x:xs) = (size x) + (size xs)
+    
+
+data List a = Nil | Cons a (List a) deriving (Show)
+
+concata :: List a -> List a -> List a
+concata Nil meh = meh
+concata (Cons x lst) meh = Cons x (concata lst meh)
+
+mapa :: (a -> b) -> List a -> List b
+mapa _ Nil = Nil
+mapa f (Cons x xs) = Cons (f x) (mapa f xs)  
+
+
+    
+instance Monad List where
+    return x = Cons x Nil -- (>>=) :: (Monad m) => m a -> (a -> m b) -> m b
+    Cons x l (>>=) f = concata (f x) (l >>= f)
+    
+filtera :: (a -> Bool) -> List a -> List a
+filtera p l = do
+    x <- l
+    case (p x) of
+        True -> Nil
+        False -> return x
+ 
+ 
