@@ -7,6 +7,8 @@ put this back after World:
 module World (fromList,Position,Direction)
 where
 
+import qualified Data.Map as Map
+
 data Direction = North | South | West | East 
                deriving (Show,Eq,Read,Enum)
 type Position = (Int, Int)
@@ -23,7 +25,9 @@ move South (x,y) = (x, y-1)
 
 
 -- a maze is a grid of cells (M rows, N columns). cells denoted by pairs of integers, origin lower left
-type Maze = [[Cell]]
+data Maze = Maze { rows :: Int
+                 , cols :: Int
+                 , cells :: Map.Map Position Cell} deriving (Show)
 
 sizeMaze :: Maze -> (Int,Int)
 sizeMaze = undefined
@@ -33,5 +37,8 @@ sizeMaze = undefined
 --validMove = undefined
 
 fromList :: [(Position, [Direction])] -> Maze
-fromList = undefined
+fromList m = Maze {cells = Map.fromList m
+                 , rows = (maximum $ map fst $ map fst m) +1
+                 , cols = (maximum $ map snd $ map fst m) +1
+                 }
 
