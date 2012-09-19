@@ -105,6 +105,7 @@ encodings = [('A',".-")
 			,('X',"-..-")
 			,('Y',"-.--")
 			,('Z',"--..")]
+
 -- encode :: Char -> String
 -- encode ' ' = ""
 -- encode c = enc
@@ -156,3 +157,4 @@ filtera p l = do
         False -> return x
  
  
+
