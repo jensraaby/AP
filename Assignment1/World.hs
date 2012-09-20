@@ -4,10 +4,11 @@ put this back after World:
 , fromList
 ) 
 -} 
-module World (fromList,Position,Direction)
+module World (fromList,validMove,Position,Direction)
 where
 
 import qualified Data.Map as Map
+import Data.Maybe
 
 data Direction = North | South | West | East 
                deriving (Show,Eq,Read,Enum)
@@ -17,6 +18,7 @@ type Position = (Int, Int)
 type Cell = [Direction]
 
 -- functions for manipulating positions
+-- TODO: error handling in a environment sensitive
 move :: Direction -> Position -> Position
 move North (x,y) = (x, y+1)
 move West  (x,y) = (x-1, y)
@@ -33,26 +35,6 @@ data Maze = Maze { rows :: Int
                      cols  :: Maze -> Int
                      cells :: Maze -> Map.Map Position Cell
                  -}
--- Want to be able to check whether it is possible to pass between two cells with
-opposingDirections :: [(Direction,Direction)]
-opposingDirections = [(West,East),(East,West),(North,South),(South,North)]
-
-checkMove :: (Position,Maybe Cell) -> (Position,Maybe Cell) -> Bool
-checkMove (_,Nothing) _ = False
-checkmove _ (_,Nothing) = False
-checkMove (p1,Just walls1) (p2,Just walls2) 
-    | p1 == move North p2 = (not (elem South walls1) && not (elem North walls2))
-    | p1 == move South p2 = (not (elem North walls1) && not (elem South walls2))
-    | p1 == move East  p2 = (not (elem West  walls1) && not (elem East  walls2))
-    | p1 == move West  p2 = (not (elem East  walls1) && not (elem West  walls2))
-    | otherwise = False
-
-validMove :: Maze -> Position -> Position -> Bool
--- Could need to add error handling on invalid position
-validMove m p1 p2 = checkMove (p1,walls1) (p2,walls2)
-                where walls1 = Map.lookup p1 (cells m)
-                      walls2 = Map.lookup p2 (cells m)
-                      
 {- 
 Here we construct a map of positions to cells 
 and work out the number of rows and columns. Lovely.
@@ -62,7 +44,29 @@ is there because the maze is indexed from zero
 -}
 fromList :: [(Position, [Direction])] -> Maze
 fromList m = Maze {cells = Map.fromList m
-                 , rows = (maximum $ map fst $ map fst m) +1
-                 , cols = (maximum $ map snd $ map fst m) +1
+                 , cols = (maximum $ map fst $ map fst m) +1
+                 , rows = (maximum $ map snd $ map fst m) +1
                  }
+
+validMove :: Maze -> Position -> Position -> Bool
+validMove m p1 p2 = fromMaybe False $ maybeValidMove m p1 p2
+
+maybeValidMove :: Maze -> Position -> Position -> Maybe Bool
+maybeValidMove m p1 p2 = do
+		walls1     <- Map.lookup p1 (cells m)
+		walls2     <- Map.lookup p2 (cells m)
+		border     <- moveDirection p1 p2
+		inverseborder  <- moveDirection p2 p1
+		Just $ not $ (elem border walls1) && (elem inverseborder walls2)
+
+
+-- Helper function to determine the direction of a move
+--  returns nothing if the positions are not adjacent
+moveDirection :: Position -> Position -> Maybe Direction
+moveDirection (x1,y1) (x2,y2)
+	| x2 == x1   && y2 == y1+1 = Just North
+	| x2 == x1   && y2 == y1-1 = Just South
+	| x2 == x1+1 && y2 == y1   = Just East
+	| x2 == x1-1 && y2 == y1   = Just West
+	| otherwise = Nothing
 
