@@ -1,3 +1,9 @@
+{-
+Advanced Programming - Assignment 1
+Jens Raaby & Erik Partridge
+September 2012
+-}
+
 import World
 
 testMase = fromList [((0,0),[North,South,West]),((0,1),[North,South,West])
@@ -12,3 +18,10 @@ testMase = fromList [((0,0),[North,South,West]),((0,1),[North,South,West])
                     ,((4,0),[North,South,East]),((4,1),[North,South,East])
                     ,((4,2),[North,South,East]),((4,3),[South,East])
                     ,((4,4),[North,West,East])]
+                    
+                    {-
+                    Things to test:
+                    - number of columns and rows is correct
+                    - valid moves are valid and vice versa
+                    - bad maze input is rejected
+                    -}

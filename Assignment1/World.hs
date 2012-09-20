@@ -1,14 +1,21 @@
-{- 
-put this back after World: 
-( validMove
-, fromList
-) 
--} 
-module World (fromList,validMove,Position,Direction)
+{-
+Advanced Programming - Assignment 1
+Jens Raaby & Erik Partridge
+September 2012
+-}
+module World 
+(  fromList
+  ,validMove
+  ,Position
+  ,Direction(..))
 where
 
+{-
+Import some very helpful modules
+-}
 import qualified Data.Map as Map
 import Data.Maybe
+
 
 data Direction = North | South | West | East 
                deriving (Show,Eq,Read,Enum)

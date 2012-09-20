@@ -1,3 +1,8 @@
+{-
+Advanced Programming - Assignment 1
+Jens Raaby & Erik Partridge
+September 2012
+-}
 data Relative = Ahead | ToLeft | ToRight | Behind
               deriving (Eq, Show)
 
