@@ -106,7 +106,9 @@ newPos South (x,y) = (x, y-1)
 
 -- Move the robot in given world and direction
 move :: World -> Direction -> Either String Robot
-move w d = if d == oldDir then Right $ Robot pos d hist
+move w d = if d == oldDir then 
+                if (validMove (maze w) oldP pos) then Right $ Robot pos d hist
+                    else Left $ "There is a wall between " ++ show(oldP) ++ " and " ++ show(pos)
            else Left $ "Robot cannot move from " ++ show(oldP) ++ " in direction " ++ show(d) ++ " because it is facing " ++ show(oldDir)
            where
             r = robot w
