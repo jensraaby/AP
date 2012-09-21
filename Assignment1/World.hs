@@ -4,6 +4,10 @@ Jens Raaby & Erik Partridge
 September 2012
 -}
 module World
+( fromList
+, validMove
+, Direction(..)
+)
 where
 
 {-
@@ -11,6 +15,7 @@ Import some very helpful modules
 -}
 import qualified Data.Map as Map
 import Data.Maybe
+import Test.HUnit
 
 -----------------------------------------------------------------
 -- Types
@@ -74,8 +79,8 @@ validMove m p1 p2 = fromMaybe False $ maybeValidMove m p1 p2
 
 maybeValidMove :: Maze -> Position -> Position -> Maybe Bool
 maybeValidMove m p1 p2 = do
-		walls1     <- Map.lookup p1 (cells m)
-		walls2     <- Map.lookup p2 (cells m)
+		walls1     <- walls m p1
+		walls2     <- walls m p2
 		border     <- moveDirection p1 p2
 		inverseborder  <- moveDirection p2 p1
 		Just $ not $ (elem border walls1) && (elem inverseborder walls2)
@@ -96,22 +101,11 @@ newPos :: Direction -> Position -> Position
 newPos North (x,y) = (x, y+1)
 newPos West  (x,y) = (x-1, y)
 newPos East  (x,y) = (x+1, y)
-newPos South (x,y) = (x, y-1)
+newPos South (x,y) = (x, y-1)  
 
--- Move the robot in given world and direction
-move :: World -> Direction -> Either String Robot
-move w d = if d == oldDir then 
-                if (validMove (maze w) oldP pos) then Right $ Robot pos d hist
-                    else Left $ "There is a wall between " ++ show(oldP) ++ " and " ++ show(pos)
-           else Left $ "Robot cannot move from " ++ show(oldP) ++ " in direction " ++ show(d) ++ " because it is facing " ++ show(oldDir)
-           where
-            r = robot w
-            oldHist = history r
-            oldP = currentPos r
-            oldDir = currentDir r
-            pos = newPos d oldP
-            hist = oldHist ++ [oldP]
-        
+-- Get the list of walls for the given position
+walls :: Maze -> Position -> Maybe Cell
+walls m p0 = Map.lookup p0 (cells m)
 
 -----------------------------------------------------------------
 -- Abstract Syntax 
@@ -125,10 +119,6 @@ data Cond = Wall Relative
           | Not  Cond
           | AtGoalPos
           deriving (Eq, Show)
-
-evalCond :: Cond -> Bool
-evalCond _ = False
--- Needs to be filled in for each case!
             
 -- Statement could be a list of statements in a block.
 data Stm = Forward
@@ -183,11 +173,15 @@ get = RC $ \world -> Right (world,robot world)
 put :: Robot -> RobotCommand ()
 put robot = RC ( \world -> Right ((),robot))
 
-
-runProg :: Maze -> Program -> ([Position], Direction)
-runProg maze program = undefined
--- runs a program started from the initial world (from given maze), returns the path of the robot and its final direction
-
+-- runProg :: Maze -> Program -> ([Position], Direction)
+-- runProg maze program = do
+--         w <- (initializeWorld maze)
+--         put $ robot w -- doesn't work
+--         result <- interp program
+--         hist   <- (history $ robot result) ++ currentPos $ robot result
+--         dir    <- currentDir $ robot result
+--         (hist,dir)
+        
 turnhelp :: Rotation -> Direction -> Direction
 turnhelp Clockwise North = East
 turnhelp Clockwise East = South
@@ -205,49 +199,125 @@ turning rotate = do
 	put $ (robot w){currentDir = (turnhelp rotate (currentDir (robot w)))}
 -- the turning function takes a rotation and gets the running world, returning a robot with updated facing.
 
+-- Moving will reposition the robot one step forwards in its current direction
+--  or it will fail if this is not possible
 moving :: RobotCommand ()
-moving = undefined
-{- moving = do
-	w <- get
-	case s of
-	where s = (move w (currentDir (robot w)))
-	 --if Left string, fail
-	 --if robot, then put the below line
-	--put $ (move w (currentDir (robot w)))
+moving = do
+    w <- get
+    pos <- return $ newPos (currentDir (robot w)) (currentPos $ robot w)
+    case (validMove (maze w) (currentPos $ robot w) pos ) of
+        True -> put $ (robot w){currentPos = pos}
+        False -> fail "Robot cannot move from currentpos to pos while facing dir"
+
+
+{- 
+-- Function to evaluate a condition in the current state (returning RobotCommand Bool)
 -}
+evalCond :: Cond -> RobotCommand Bool
+evalCond (Wall rel) =
+    do
+        w <- get
+        currentWalls <- return( fromMaybe [] $ walls (maze w) $ currentPos (robot w))
+        dir <- return (currentDir (robot w))
+        wall <- case rel of 
+            Ahead   -> return $ dir `elem` currentWalls
+            ToLeft  -> return $ (turnhelp Counterclockwise dir) `elem` currentWalls
+            ToRight -> return $ (turnhelp Clockwise dir) `elem` currentWalls
+            Behind  -> return $ (turnhelp Clockwise $ turnhelp Clockwise dir) `elem` currentWalls
+        return wall
+        
+evalCond (And c1 c2) = 
+    do
+        a <- evalCond c1
+        b <- evalCond c2
+        return (and [a,b])
 
-
-
+evalCond (Not c) = 
+    do
+        this <- evalCond c
+        return (not this)
+        
+evalCond AtGoalPos = 
+    do 
+        w <- get 
+        return (currentPos (robot w) == (cols (maze w),rows (maze w)))
+ 
+{-
+-- interp takes a statment and returns a RobotCommand (i.e. a changed state)
+-}
 interp :: Stm -> RobotCommand ()
-interp Forward         = do
-                            moving
-			                return ()
-interp Backward        = do
-                            turning Clockwise
-			                turning Clockwise
-			                moving
-                            return ()
-interp TurnRight       = do
-			                turning Clockwise
-			                return () 
-interp TurnLeft        = do 
-            			    turning Counterclockwise
-            			    return ()
-interp (If cond s1 s2) = do
-            			    case (evalCond cond) of
-            			      True  -> interp s1
-            			      False -> interp s2			
-interp (While cond s)  = do
-            			    case (evalCond cond) of
-            			      True  -> interp (Block [s, While cond s])
-            			      False -> return ()
-interp (Block ([]))    =    return ()
-interp (Block (x:xs))  = do
-            			    interp x
-            			    interp (Block xs)
-            			    return ()
+interp Forward = do
+    moving
+    return ()
+    
+interp Backward = do
+    turning Clockwise
+    turning Clockwise
+    moving
+    return ()
 
-simMaze = fromList [((0,0),[South,West]),((0,1),[North,West])
+interp TurnRight = do
+    turning Clockwise
+    return ()
+    
+interp TurnLeft = do 
+    turning Counterclockwise
+    return ()
+    
+interp (If cond s1 s2) = 
+    do
+        c <- evalCond cond
+        case c of
+            True  -> interp s1
+            False -> interp s2        
+             
+interp (While cond s)  = 
+    do
+        c <- evalCond cond
+        case c of
+            True  -> interp (Block [s, While cond s])
+            False -> return ()
+        
+interp (Block ([]))    = return ()
+interp (Block (x:xs))  = 
+    do
+        interp x
+        interp (Block xs)
+        return ()
+
+--------------------------------------------------
+-- Test data                            
+--------------------------------------------------
+-- the Test Maze supplied in the assignment 
+testMazeList = [((0,0),[North,South,West]),((0,1),[North,South,West])
+                    ,((0,2),[South,West]),((0,3),[West,East])
+                    ,((0,4),[North,West]),((1,0),[South]),((1,1),[North])
+                    ,((1,2),[South,East]),((1,3),[North,West])
+                    ,((1,4),[North,South,East]),((2,0),[North,South])
+                    ,((2,1),[South,East]),((2,2),[West,East]),((2,3),[])
+                    ,((2,4),[North,West,East]),((3,0),[North,South])
+                    ,((3,1),[South,West]),((3,2),[West])
+                    ,((3,3),[]),((3,4),[North,West,East])
+                    ,((4,0),[North,South,East]),((4,1),[North,South,East])
+                    ,((4,2),[North,South,East]),((4,3),[South,East])
+                    ,((4,4),[North,West,East])]
+test1_cols = 5
+test1_rows = 5
+                    
+test2MazeList = [((0,0),[South,West]),((0,1),[North,West])
 		   ,((1,0),[North,South,East]),((1,1),[North,South,East])]
+test2_rows = 2
+test2_cols = 2
 
--- algorithm to generate a maze, then test that you can navigate
+maze1 = fromList(testMazeList)
+maze2 = fromList(test2MazeList)
+
+test1 = TestCase $ assertBool "Maze 1 columns" $ test1_cols == (cols maze1)
+test2 = TestCase $ assertBool "Maze 1 rows" $ test1_rows == (rows maze1)
+test3 = TestCase $ assertBool "Maze 2 columns" $ test2_cols == (cols maze2)
+test4 = TestCase $ assertBool "Maze 2 rows" $ test2_rows == (rows maze2)
+test5 = TestCase $ assertBool "Maze 2 validMove" $ validMove maze2 (0,0) (0,1)
+test6 = TestCase $ assertBool "Maze 2 invalidMove" $ not $ validMove maze2 (0,0) (1,1)
+
+basicTests = TestList [test1,test2,test3,test4,test6]
+
