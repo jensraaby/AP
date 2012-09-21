@@ -3,13 +3,7 @@ Advanced Programming - Assignment 1
 Jens Raaby & Erik Partridge
 September 2012
 -}
-module World 
-{-
-(  fromList
-  ,validMove
-  ,Position
-  ,Direction(..))
--}
+module World
 where
 
 {-
@@ -28,7 +22,7 @@ type Position = (Int, Int)
 -- type Cell - a list of walls for that cell (Eg [East,North])
 type Cell = [Direction]
 
--- a maze is a grid of cells (M rows, N columns). cells denoted by pairs of integers, origin lower left
+-- a maze is a grid of cells (M rows, N columns). cells denoted by pairs of integers, origin 0,0
 data Maze = Maze { rows :: Int
                  , cols :: Int
                  , cells :: Map.Map Position Cell} deriving (Show)
@@ -52,7 +46,7 @@ data World = World { maze :: Maze
                    
                    
 -----------------------------------------------------------------
--- Function definitions
+-- Function definitions part 1
 -----------------------------------------------------------------
 initializeWorld :: Maze -> World
 initializeWorld m = World m r
@@ -131,6 +125,10 @@ data Cond = Wall Relative
           | Not  Cond
           | AtGoalPos
           deriving (Eq, Show)
+
+evalCond :: Cond -> Bool
+evalCond _ = False
+-- Needs to be filled in for each case!
             
 -- Statement could be a list of statements in a block.
 data Stm = Forward
@@ -159,6 +157,9 @@ In case of an error, the computation returns an error string.
 Hence the 'Either' in the type declaration
 
 -}
+data Rotation = Clockwise | Counterclockwise
+			deriving(Show,Eq,Read,Enum)
+
 newtype RobotCommand a = RC { runRC :: World -> Either String (a,Robot) }
 
 -- Instantiate the RobotCommand as a Monad:
@@ -172,7 +173,7 @@ instance Monad RobotCommand where
                                               RC g = f robot
                                               newWorld = World (maze world) newRC
                                               in g newWorld                    
-    --fail err = RC $ \world -> Left err
+-- 	fail err = RC $ \world -> Left err
 
 -- Get - returns the current state
 get :: RobotCommand World                            
@@ -180,33 +181,71 @@ get = RC $ \world -> Right (world,robot world)
 
 -- Put - updates the state
 put :: Robot -> RobotCommand ()
-put robot = RC $ \world -> Right ((),robot)
+put robot = RC ( \world -> Right ((),robot))
 
 
 runProg :: Maze -> Program -> ([Position], Direction)
 runProg maze program = undefined
 -- runs a program started from the initial world (from given maze), returns the path of the robot and its final direction
 
-interp :: Stm -> RobotCommand ()
--- interp Forward         = do
---                             w <- get -- get the robot
---                             put $ (robot w) {....} -- change the state of robot, put it back in the state
---                             return ()
-interp Backward        = do
-                            w <- get
-                            put $ (robot w) 
-                                -- check direction
-                                -- move the robot backwards
-                                -- update its history and position
-                            return ()
-                            
-interp TurnRight       = undefined 
-interp TurnLeft        = undefined
--- interp If Cond s1 s2   = undefined
--- interp While Cond s    = undefined
--- interp Block           = undefined
--- computes effect of executing a robot statement
+turnhelp :: Rotation -> Direction -> Direction
+turnhelp Clockwise North = East
+turnhelp Clockwise East = South
+turnhelp Clockwise South = West
+turnhelp Clockwise West = North
+turnhelp Counterclockwise North = West
+turnhelp Counterclockwise West = South
+turnhelp Counterclockwise South = East
+turnhelp Counterclockwise East = North
+-- turnhelp is a simple exhaustive helper function for turning
 
+turning :: Rotation -> RobotCommand ()
+turning rotate = do
+	w <- get
+	put $ (robot w){currentDir = (turnhelp rotate (currentDir (robot w)))}
+-- the turning function takes a rotation and gets the running world, returning a robot with updated facing.
+
+moving :: RobotCommand ()
+moving = undefined
+{- moving = do
+	w <- get
+	case s of
+	where s = (move w (currentDir (robot w)))
+	 --if Left string, fail
+	 --if robot, then put the below line
+	--put $ (move w (currentDir (robot w)))
+-}
+
+
+
+interp :: Stm -> RobotCommand ()
+interp Forward         = do
+                            moving
+			                return ()
+interp Backward        = do
+                            turning Clockwise
+			                turning Clockwise
+			                moving
+                            return ()
+interp TurnRight       = do
+			                turning Clockwise
+			                return () 
+interp TurnLeft        = do 
+            			    turning Counterclockwise
+            			    return ()
+interp (If cond s1 s2) = do
+            			    case (evalCond cond) of
+            			      True  -> interp s1
+            			      False -> interp s2			
+interp (While cond s)  = do
+            			    case (evalCond cond) of
+            			      True  -> interp (Block [s, While cond s])
+            			      False -> return ()
+interp (Block ([]))    =    return ()
+interp (Block (x:xs))  = do
+            			    interp x
+            			    interp (Block xs)
+            			    return ()
 
 simMaze = fromList [((0,0),[South,West]),((0,1),[North,West])
 		   ,((1,0),[North,South,East]),((1,1),[North,South,East])]

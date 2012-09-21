@@ -1,0 +1,105 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf340
+{\fonttbl\f0\fnil\fcharset0 Georgia;\f1\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720
+
+\f0\fs32 \cf0 A short report explaining the code, and an assessment of the quality of code including what this assessment is based on\
+
+\fs24 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 Part 1 - Modelling the World\
+The code for this part of the assignment is relatively straightforward. After declaring 
+\f1 Direction
+\f0  and 
+\f1 Position
+\f0  as given in the assignment, a type alias 
+\f1 Cell
+\f0  is created denoting a list of directions (each representing a wall).\
+\
+The 
+\f1 Maze
+\f0  data structure  is constructed as a record containing the number of rows and columns, in addition to a 
+\f1 Map
+\f0  which maps 
+\f1 Positions
+\f0  to 
+\f1 Cells
+\f0 . Using the record syntax makes it easier to extract the information from a Maze later on. We assume that a maze can have undefined positions, in which case the robot cannot navigate to them. This is equivalent to exiting the bounds of the maze. It allows inputs of unnavigable mazes. It is not necessarily a robust handling of bad mazes, but allows (for example) odd shaped mazes, or those with holes in the middle. The row and column counts then become slightly ambiguous: we treat them as extreme boundaries in each direction from the origin 
+\f1 (0,0)
+\f0 . \
+\
+The 
+\f1 Robot
+\f0  data structure is similarly defined as a record, with position, direction and a list of previous positions.\
+\
+A 
+\f1 World
+\f0  comprises a 
+\f1 Maze
+\f0  and a 
+\f1 Robot
+\f0 .\
+\
+In terms of creating the initial world, a given maze and a default robot are simply inserted into the 
+\f1 World
+\f0  value constructor. The default robot has position 
+\f1 (0,0)
+\f0 , faces 
+\f1 North
+\f0  and has no history. We assume that the current position is appended to the history of positions after the robot has moved to another position. It could also be modelled such that every instruction forces an item to be 'pushed' onto the position history (thus giving an indication of the total number of moves).\
+\
+Constructing a maze from an association list of positions to lists of directions uses the 
+\f1 Data.Map
+\f0  fromList function to create an efficient 
+\f1 map
+\f0  structure. This also introduces a level of error handling, in that looking up a position in the 
+\f1 Map
+\f0  returns an instance of 
+\f1 Maybe
+\f0 . If the key position is not in the map, lookup therefore returns 
+\f1 Nothing
+\f0 . The columns and rows parameters are calculated by extracting the lists of x and y coordinates from the given positions and finding their maxima.\
+\
+Determining whether a move is valid is achieved with an auxiliary function (
+\f1 maybeValidMove
+\f0 ) that returns a 
+\f1 Maybe Bool
+\f0 . This looks up the walls of the two positions (which may be 
+\f1 Nothing
+\f0  if the maze has no definition of those positions). The function also determines which walls would be problematic for this move, using another auxiliary function 
+\f1 moveDirection :: Position -> Position -> Maybe Direction
+\f0 . This handles the case that the tow positions are not adjacent (returning 
+\f1 Nothing
+\f0 ), otherwise returning the 
+\f1 Direction
+\f0  the move entails. 
+\f1 maybeValidMove
+\f0  returns 
+\f1 Just True
+\f0  if the two positions are adjacent, and have no conflicting walls. 
+\f1 validMove
+\f0  converts the 
+\f1 Maybe Bool 
+\f0 to a 
+\f1 Bool
+\f0 , using 
+\f1 fromMaybe
+\f0  from the 
+\f1 Data.Maybe
+\f0  library. This allows a result of 
+\f1 Nothing
+\f0  to return 
+\f1 False
+\f0  as the result. We could have kept the
+\f1  Maybe Bool
+\f0  type, but that would lead to more error handling later on which we decided at this stage would not be that useful.\
+\
+The final part of this section of the code defines two further auxiliary functions. newPos :: Direction -> Position -> Position as its type and name suggest determines a new position from a previous one given a direction.\
+
+\f1 move :: World -> Direction -> Either String Robot
+\f0  is more interesting. This returns Either in order to provide a String denoting an error message in the case of failure. The function is needed for part 2 of the assignment, and essentially performs case based error handling for moving the robot. The error messages returned give specific details about why the computation failed (wall in the way or facing the wrong direction). \
+\
+\
+Part 2}
