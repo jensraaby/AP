@@ -15,7 +15,7 @@ Import some very helpful modules
 -}
 import qualified Data.Map as Map
 import Data.Maybe
-import Test.HUnit
+--import Test.HUnit
 
 -----------------------------------------------------------------
 -- Types
@@ -55,7 +55,7 @@ data World = World { maze :: Maze
 -----------------------------------------------------------------
 initializeWorld :: Maze -> World
 initializeWorld m = World m r
-			where r = Robot (0,0) North []
+			where r = Robot (0,0) North [(0,0)]
    
 {- 
 Here we construct a map of positions to cells 
@@ -83,7 +83,7 @@ maybeValidMove m p1 p2 = do
 		walls2     <- walls m p2
 		border     <- moveDirection p1 p2
 		inverseborder  <- moveDirection p2 p1
-		Just $ not $ (elem border walls1) && (elem inverseborder walls2)
+		Just $ not $ (elem border walls1) || (elem inverseborder walls2)
 
 
 -- Helper function to determine the direction of a move
@@ -105,7 +105,12 @@ newPos South (x,y) = (x, y-1)
 
 -- Get the list of walls for the given position
 walls :: Maze -> Position -> Maybe Cell
-walls m p0 = Map.lookup p0 (cells m)
+--walls m p0 = Map.lookup p0 (cells m)
+walls m p0 = case x of
+		True -> Map.lookup p0 (cells m)
+		False -> Just [North, East, South, West]
+	     where x = Map.member p0 (cells m)
+--The False case treats "holes" as solid blocks.
 
 -----------------------------------------------------------------
 -- Abstract Syntax 
@@ -129,6 +134,22 @@ data Stm = Forward
          | While Cond Stm
          | Block [Stm]
          deriving (Eq, Show)
+
+forward = (While (Not AtGoalPos) Forward)
+-- forward is a dumb bot that only drives, well, forward.
+
+spinny = (While (Not AtGoalPos) (Block [TurnRight,(While (Wall Ahead) TurnLeft), Forward]))
+ 
+-- spinny is a bot which turns right to start, then checks to see if it can move forward. If not, turn left!
+-- Same as lefty, but right first, less code and more turning!
+
+lefty = (While (Not AtGoalPos) (If (Not (Wall ToLeft)) (Block [TurnLeft, Forward])
+			       (If (Not (Wall Ahead)) (Forward)
+			       (If (Not (Wall ToRight)) (Block [TurnRight, Forward])
+			       (Backward)))))
+-- lefty is a bot which always checks if it can drive to the left, then middle, then right, stopping if it reaches the goal.
+-- Essentially, it is a depth first search
+
 
 -- Programs are just statements
 type Program = Stm
@@ -173,14 +194,14 @@ get = RC $ \world -> Right (world,robot world)
 put :: Robot -> RobotCommand ()
 put robot = RC ( \world -> Right ((),robot))
 
--- runProg :: Maze -> Program -> ([Position], Direction)
--- runProg maze program = do
---         w <- (initializeWorld maze)
---         put $ robot w -- doesn't work
---         result <- interp program
---         hist   <- (history $ robot result) ++ currentPos $ robot result
---         dir    <- currentDir $ robot result
---         (hist,dir)
+--runProg :: Maze -> Program -> ([pos], Direction)
+--runProg maze program = runRC (interp program) (initializeWorld maze)
+
+runProg :: Maze -> Program -> Either String ([Position], Direction)
+runProg maze program = case x of 
+			Left err -> do Left err
+			Right (_, r) -> do Right $ (history r, currentDir r)
+	               where x = runRC (interp program) (initializeWorld maze)
         
 turnhelp :: Rotation -> Direction -> Direction
 turnhelp Clockwise North = East
@@ -206,8 +227,8 @@ moving = do
     w <- get
     pos <- return $ newPos (currentDir (robot w)) (currentPos $ robot w)
     case (validMove (maze w) (currentPos $ robot w) pos ) of
-        True -> put $ (robot w){currentPos = pos}
-        False -> fail "Robot cannot move from currentpos to pos while facing dir"
+        True -> put $ (robot w){currentPos = pos, history = ((history(robot w))++[pos])}
+        False -> fail ("Robot cannot move from " ++ show (currentPos (robot w)) ++ " to " ++ show pos ++ " while facing " ++ show (currentDir (robot 			      w)) ++ ". Path: " ++ show (history (robot w)))
 
 
 {- 
@@ -219,11 +240,20 @@ evalCond (Wall rel) =
         w <- get
         currentWalls <- return( fromMaybe [] $ walls (maze w) $ currentPos (robot w))
         dir <- return (currentDir (robot w))
+	forwardWalls <- return( fromMaybe [] $ walls (maze w) $ (newPos dir (currentPos (robot w))))
+	leftWalls <- return( fromMaybe [] $ walls (maze w) $ (newPos (turnhelp Counterclockwise dir) (currentPos (robot w))))
+	rightWalls <- return( fromMaybe [] $ walls (maze w) $ (newPos (turnhelp Clockwise dir) (currentPos (robot w))))
+	backWalls <- return( fromMaybe [] $ walls (maze w) $ (newPos (turnhelp Clockwise $ turnhelp Clockwise dir) (currentPos (robot w))))
         wall <- case rel of 
-            Ahead   -> return $ dir `elem` currentWalls
-            ToLeft  -> return $ (turnhelp Counterclockwise dir) `elem` currentWalls
-            ToRight -> return $ (turnhelp Clockwise dir) `elem` currentWalls
-            Behind  -> return $ (turnhelp Clockwise $ turnhelp Clockwise dir) `elem` currentWalls
+--            Ahead   -> return $ dir `elem` currentWalls 
+            Ahead   -> return $ (dir `elem` currentWalls) ||
+				((turnhelp Clockwise $ turnhelp Clockwise dir) `elem` forwardWalls)
+            ToLeft  -> return $ ((turnhelp Counterclockwise dir) `elem` currentWalls) ||
+				((turnhelp Clockwise dir) `elem` leftWalls)
+            ToRight -> return $ ((turnhelp Clockwise dir) `elem` currentWalls) ||
+				((turnhelp Counterclockwise dir) `elem` rightWalls)
+            Behind  -> return $ ((turnhelp Clockwise $ turnhelp Clockwise dir) `elem` currentWalls) ||
+				(dir `elem` backWalls)
         return wall
         
 evalCond (And c1 c2) = 
@@ -240,7 +270,7 @@ evalCond (Not c) =
 evalCond AtGoalPos = 
     do 
         w <- get 
-        return (currentPos (robot w) == (cols (maze w),rows (maze w)))
+        return (currentPos (robot w) == (cols (maze w) - 1,rows (maze w) -1))
  
 {-
 -- interp takes a statment and returns a RobotCommand (i.e. a changed state)
@@ -289,6 +319,7 @@ interp (Block (x:xs))  =
 -- Test data                            
 --------------------------------------------------
 -- the Test Maze supplied in the assignment 
+
 testMazeList = [((0,0),[North,South,West]),((0,1),[North,South,West])
                     ,((0,2),[South,West]),((0,3),[West,East])
                     ,((0,4),[North,West]),((1,0),[South]),((1,1),[North])
@@ -304,13 +335,18 @@ testMazeList = [((0,0),[North,South,West]),((0,1),[North,South,West])
 test1_cols = 5
 test1_rows = 5
                     
-test2MazeList = [((0,0),[South,West]),((0,1),[North,West])
-		   ,((1,0),[North,South,East]),((1,1),[North,South,East])]
+-- The larger, provided maze in the assignment
+
+test2MazeList = [((0,0),[South,West]),((0,1),[North,West,East]),((1,0),[South,East]),((1,1),[North,East])]
 test2_rows = 2
 test2_cols = 2
 
+-- A smaller 2x2 maze.
+
 maze1 = fromList(testMazeList)
 maze2 = fromList(test2MazeList)
+
+{-
 
 test1 = TestCase $ assertBool "Maze 1 columns" $ test1_cols == (cols maze1)
 test2 = TestCase $ assertBool "Maze 1 rows" $ test1_rows == (rows maze1)
@@ -321,3 +357,4 @@ test6 = TestCase $ assertBool "Maze 2 invalidMove" $ not $ validMove maze2 (0,0)
 
 basicTests = TestList [test1,test2,test3,test4,test6]
 
+-}
