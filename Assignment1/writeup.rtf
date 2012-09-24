@@ -1,119 +1,191 @@
-{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf340
-{\fonttbl\f0\fnil\fcharset0 Georgia;\f1\fnil\fcharset0 Menlo-Regular;\f2\froman\fcharset0 Times-Roman;
+{\rtf1\ansi\deff3\adeflang1025
+{\fonttbl{\f0\froman\fprq2\fcharset0 Times New Roman;}{\f1\froman\fprq2\fcharset2 Symbol;}{\f2\fswiss\fprq2\fcharset0 Arial;}{\f3\froman\fprq2\fcharset128 Liberation Serif{\*\falt Times New Roman};}{\f4\froman\fprq0\fcharset128 Georgia;}{\f5\froman\fprq0\fcharset128 Menlo-Regular;}{\f6\froman\fprq0\fcharset128 Liberation Serif{\*\falt Times New Roman};}{\f7\fswiss\fprq0\fcharset128 Liberation Sans{\*\falt Arial};}{\f8\fnil\fprq0\fcharset128 WenQuanYi Micro Hei;}{\f9\fnil\fprq0\fcharset128 Lohit Hindi;}}
+{\colortbl;\red0\green0\blue0;\red128\green128\blue128;}
+{\stylesheet{\s0\snext0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033 Normal;}
+{\s15\sbasedon0\snext16\ql\nowidctlpar\sb240\sa120\keepn\ltrpar\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs28\alang1081\loch\f7\fs28\lang1033 Heading;}
+{\s16\sbasedon0\snext16\ql\nowidctlpar\sb0\sa120\ltrpar\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033 Text body;}
+{\s17\sbasedon16\snext17\ql\nowidctlpar\sb0\sa120\ltrpar\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033 List;}
+{\s18\sbasedon0\snext18\ql\nowidctlpar\sb120\sa120\noline\ltrpar\cf0\i\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\ai\loch\f6\fs24\lang1033 Caption;}
+{\s19\sbasedon0\snext19\ql\nowidctlpar\noline\ltrpar\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033 Index;}
+}{\info{\creatim\yr0\mo0\dy0\hr0\min0}{\revtim\yr0\mo0\dy0\hr0\min0}{\printim\yr0\mo0\dy0\hr0\min0}{\comment LibreOffice}{\vern3500}}\deftab720
+
+{\*\pgdsctbl
+{\pgdsc0\pgdscuse195\pgwsxn11906\pghsxn16838\marglsxn1440\margrsxn1440\margtsxn1440\margbsxn1440\pgdscnxt0 Default;}}
+\formshade{\*\pgdscno0}\paperh16838\paperw11906\margl1440\margr1440\margt1440\margb1440\sectd\sbknone\sectunlocked1\pgndec\pgwsxn11906\pghsxn16838\marglsxn1440\margrsxn1440\margtsxn1440\margbsxn1440\ftnbj\ftnstart1\ftnrstcont\ftnnar\aenddoc\aftnrstcont\aftnstart1\aftnnrlc
+\pgndec\pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar{\rtlch \ltrch\loch\lang1033
+Erik Partridge and Jens Raaby}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar{\rtlch \ltrch\loch\lang1033
 }
-{\colortbl;\red255\green255\blue255;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
-\deftab720
-\pard\pardeftab720
-
-\f0\fs32 \cf0 A short report explaining the code, and an assessment of the quality of code including what this assessment is based on\
-
-\fs24 \
-\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
-\cf0 Part 1 - Modelling the World\
-The code for this part of the assignment is relatively straightforward. After declaring 
-\f1 Direction
-\f0  and 
-\f1 Position
-\f0  as given in the assignment, a type alias 
-\f1 Cell
-\f0  is created denoting a list of directions (each representing a wall).\
-\
-The 
-\f1 Maze
-\f0  data structure  is constructed as a record containing the number of rows and columns, in addition to a 
-\f1 Map
-\f0  which maps 
-\f1 Positions
-\f0  to 
-\f1 Cells
-\f0 . Using the record syntax makes it easier to extract the information from a Maze later on. We assume that a maze can have undefined positions, in which case the robot cannot navigate to them. This is equivalent to exiting the bounds of the maze. It allows inputs of unnavigable mazes. It is not necessarily a robust handling of bad mazes, but allows (for example) odd shaped mazes, or those with holes in the middle. The row and column counts then become slightly ambiguous: we treat them as extreme boundaries in each direction from the origin 
-\f1 (0,0)
-\f0 . \
-\
-The 
-\f1 Robot
-\f0  data structure is similarly defined as a record, with position, direction and a list of previous positions.\
-\
-A 
-\f1 World
-\f0  comprises a 
-\f1 Maze
-\f0  and a 
-\f1 Robot
-\f0 .\
-\
-In terms of creating the initial world, a given maze and a default robot are simply inserted into the 
-\f1 World
-\f0  value constructor. The default robot has position 
-\f1 (0,0)
-\f0 , faces 
-\f1 North
-\f0  and has no history. We assume that the current position is appended to the history of positions after the robot has moved to another position. It could also be modelled such that every instruction forces an item to be 'pushed' onto the position history (thus giving an indication of the total number of moves).\
-\
-Constructing a maze from an association list of positions to lists of directions uses the 
-\f1 Data.Map
-\f0  fromList function to create an efficient 
-\f1 map
-\f0  structure. This also introduces a level of error handling, in that looking up a position in the 
-\f1 Map
-\f0  returns an instance of 
-\f1 Maybe
-\f0 . If the key position is not in the map, lookup therefore returns 
-\f1 Nothing
-\f0 . The columns and rows parameters are calculated by extracting the lists of x and y coordinates from the given positions and finding their maxima.\
-\
-Determining whether a move is valid is achieved with an auxiliary function (
-\f1 maybeValidMove
-\f0 ) that returns a 
-\f1 Maybe Bool
-\f0 . This looks up the walls of the two positions (which may be 
-\f1 Nothing
-\f0  if the maze has no definition of those positions). The function also determines which walls would be problematic for this move, using another auxiliary function 
-\f1 moveDirection :: Position -> Position -> Maybe Direction
-\f0 . This handles the case that the tow positions are not adjacent (returning 
-\f1 Nothing
-\f0 ), otherwise returning the 
-\f1 Direction
-\f0  the move entails. 
-\f1 maybeValidMove
-\f0  returns 
-\f1 Just True
-\f0  if the two positions are adjacent, and have no conflicting walls. 
-\f1 validMove
-\f0  converts the 
-\f1 Maybe Bool 
-\f0 to a 
-\f1 Bool
-\f0 , using 
-\f1 fromMaybe
-\f0  from the 
-\f1 Data.Maybe
-\f0  library. This allows a result of 
-\f1 Nothing
-\f0  to return 
-\f1 False
-\f0  as the result. We could have kept the
-\f1  Maybe Bool
-\f0  type, but that would lead to more error handling later on which we decided at this stage would not be that useful.\
-\
-The final part of this section of the code defines two further auxiliary functions. newPos :: Direction -> Position -> Position as its type and name suggest determines a new position from a previous one given a direction.\
-
-\f1 move :: World -> Direction -> Either String Robot
-\f0  is more interesting. This returns Either in order to provide a String denoting an error message in the case of failure. The function is needed for part 2 of the assignment, and essentially performs case based error handling for moving the robot. The error messages returned give specific details about why the computation failed (wall in the way or facing the wrong direction). \
-\
-
-\b Code quality for Part 1\
-
-\b0 Determining the quality of the code could be achieved in various ways, either sensible, nefarious, unjustified or outrageously complex.\
-\
-This part of the assignment mainly deals with creating a good representation of the world for this problem. We have documented our assumptions in the preceding description and throughout the code in comments. It should handle failures we anticipated, but in order to be more certain about the reliability it is a wise idea to write automated tests. \
-\
-\
-Part 2\
-Explain it\
-What is the error handling?\
-\pard\pardeftab720\sa320
-
-\f2\fs32 \cf0 (Note that the maze does not change during execution, your type should reflect this. Your type should also specify how you deal with errors and your should document that.)\
-(Suggestion for testing: write a robot program that will find a path from the initial position to the goal position in all (loop free) mazes.)}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+Part 1 - Modelling the World}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+----------------------------------}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+The code for this part of the assignment is relatively straightforward. After declaring }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Direction}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ and }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Position}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ as given in the assignment, a type alias }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Cell}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ is created denoting a list of directions (each representing a wall).}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+The }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Maze}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ data structure  is constructed as a record containing the number of rows and columns, in addition to a }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Map}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ which maps }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Positions}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ to }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Cells}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+. Using the record syntax makes it easier to extract the information from a Maze later on. We assume that a maze can have undefined positions, in which case the robot cannot navigate to them. This is equivalent to exiting the bounds of the maze. It allows inputs of unnavigable mazes. It is not necessarily a robust handling of bad mazes, but allows (for example) odd shaped mazes, or those with holes in the middle. The row and column counts then become slightly ambiguous: we treat them as extreme boundaries in each direction from the origin }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+(0,0)}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+. }
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+The }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Robot}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ data structure is similarly defined as a record, with position, direction and a list of previous positions.}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+A }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+World}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ comprises a }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Maze}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ and a }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Robot}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+.}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+In terms of creating the initial world, a given maze and a default robot are simply inserted into the }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+World}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ value constructor. The default robot has position }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+(0,0)}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+, faces }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+North}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ and has a history of [(0,0)]. We assume that the current position is the last element in the list, and that it is appended at the time of moving. At the moment, history is only updated for movement commands, not for turning. It could also be modelled such that every instruction forces an item to be 'pushed' onto the position history (thus giving an indication of the total number of moves).}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+Constructing a maze from an association list of positions to lists of directions uses the }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Data.Map}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ fromList function to create an efficient }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+map}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ structure. This also introduces a level of error handling, in that looking up a position in the }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Map}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ returns an instance of }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Maybe}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+. If the key position is not in the map, lookup therefore returns }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Nothing}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+. The columns and rows parameters are calculated by extracting the lists of x and y coordinates from the given positions and finding their maxima.}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+Determining whether a move is valid is achieved with an auxiliary function (}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+maybeValidMove}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+) that returns a }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Maybe Bool}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+. This looks up the walls of the two positions (which may be }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Nothing}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ if the maze has no definition of those positions). The function also determines which walls would be problematic for this move, using another auxiliary function }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+moveDirection :: Position -> Position -> Maybe Direction}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+. This handles the case that the tow positions are not adjacent (returning }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Nothing}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+), otherwise returning the }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Direction}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ the move entails. }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+maybeValidMove}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ returns }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Just True}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ if the two positions are adjacent, and have no conflicting walls. }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+validMove}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ converts the }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Maybe Bool }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+to a }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Bool}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+, using }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+fromMaybe}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ from the }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Data.Maybe}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ library. This allows a result of }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Nothing}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ to return }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+False}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ as the result. We could have kept the}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+ Maybe Bool}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ type, but that would lead to more error handling later on which we decided at this stage would not be that useful.}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+The final part of this section of the code defines two further auxiliary functions. newPos :: Direction -> Position -> Position as its type and name suggest determines a new position from a previous one given a direction.}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+move :: World -> Direction -> Either String Robot}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ is more interesting. This returns Either in order to provide a String denoting an error message in the case of failure. The function is needed for part 2 of the assignment, and essentially performs case based error handling for moving the robot. The error messages returned give specific details about why the computation failed (wall in the way or facing the wrong direction). }
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+Code quality for Part 1}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+-------------------------------}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+Determining the quality of the code could be achieved in various ways, either sensible, nefarious, unjustified or outrageously complex.}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+For our purposes, we had several assumptions. First, that a provided maze can be solved. This means that there is no process of checking whether or not a given maze is actually solvable by any means, but as generation of mazes was not a requirement, we leave this as a requirement for the mazes given to our program. Second, that if a position in a maze is not defined, it is assumed to be filled in on all four sides. This lets us build mazes without having to specify every cell in a rectangular grid. Third, that if there are two adjacent cells, it is not necessary for both cells to have a wall opposing the other for it to be considered a wall between the two cells. An example: [((0,0),[]),((0,1),[South])] is interpreted as there is a wall between the two cells, when only the North cell has the dividing wall. A consequence is that there are no one-way paths in the maze, which might make this much more interesting. Finally, that error handling for world generation is dependent on the compiler. If a maze is inserted incorrectly, it is the compiler that complains, not any part of the program we wrote.}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+To test world generation, we used two mazes: the one provided to us in the assignment, and a smaller maze labeled maze2 in the code. Both mazes were correctly turned into worlds.}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+This part of the assignment mainly deals with creating a good representation of the world for this problem. We have documented our assumptions in the preceding description and throughout the code in comments. It should handle failures we anticipated, but in order to be more certain about the reliability it is a wise idea to write automated tests. }
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+Part 2 - Explanation & Quality Assessment}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+----------------------------------------------------------}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+Part 2 of the assignment involves creating the RobotCommand monad so that a robot can navigate the maze defined in part 1. We do this by creating a data structure for statements that a Robot could potentially use and an interpreter that converts these statements into movements within the world.}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+The comments of the code document the error handling of the RobotCommands. Essentially the Computations return an }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Either}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ with types }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Left String}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+ and }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+Right (a,Robot).}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+The}{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f5
+ Left }{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+case returns a string with an error message explaining what went wrong. In an ideal case, we would also return the statement that caused the error, yet we did not have time to implement this.}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+Like in the preceding section, we had several assumptions. First, that all statements are inputted correctly. There is no system for checking incorrect inputs apart from the Haskell type checking of the compiler. Second, that the maze has a solution. There is no system for checking for an infinite loop. One could be constructed simply by checking if position ((0,0),North) is visited ever again, because that is the very last position to be checked. However, we do not currently have a function which checks for this. The result is that the robot can get stuck in an infinite loop if there is no solution to the maze. Third, that the robot does not need to check the validity of a move before committing to it. This means a robot could bump it's head into a wall, which will return a detailed string of current position, intended destination, orientation, and position history, as well as halting the process.}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+Full testing for part 2 would involve the creation of random bots and following that they behaved as expected (wall crashing, goal finding, etc.). Our testing used three robot behaviours: one that always drives forward, one that spins around and proceeds forward if there is no wall, and one that checks to see which walls are missing before proceeding. These three bots behaved in the manner that was expected, either crashing in the correct locations in the case of forward, or taking the desired paths for spinny and lefty.}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+Part 3}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+-------}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\rtlch \ltrch\loch\lang1033
+}
+\par \pard\plain \s0\ql\nowidctlpar\ltrpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\loch\f6\fs24\lang1033\nowidctlpar\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803{\cf1\b0\kerning1\hich\af8\langfe2052\dbch\af9\afs24\alang1081\rtlch \ltrch\loch\fs24\lang1033\loch\f4
+We did not have enough time to explore this section of the assignment.}
+\par }
