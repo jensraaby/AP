@@ -1,0 +1,1 @@
+consult('numbersets.pl').

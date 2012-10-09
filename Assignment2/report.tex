@@ -1,0 +1,301 @@
+\documentclass{article} 
+\usepackage{fancyhdr,subfig,graphicx,psfrag,amsfonts,textcomp,mathtools,amsmath,hyperref,listings} 
+
+\title{Advanced Programming 2012\\
+Assignment 2 - Prolog} 
+\author{Erik J. Partridge \& Jens P. Raaby}
+
+\begin{document} 
+\maketitle
+
+\section{Structure of the report}
+Each of the following sections documents the assumptions made and assessment of the correctness of the predicates. 
+
+After the discussion of the predicates, a short section describing the additional testing predicates is presented.
+
+\section{less/2}
+The assumption for less(X,Y) is that it returns TRUE if X is a nats representation of a number that is less than the number Y represents. If either are variables, it must run through all possibilities that would make the statement TRUE.
+There are four success cases for less(X,Y):
+\begin{itemize}
+
+    \item X is a variable, Y is a nat
+
+    \item Y is a nat, X is a variable
+
+    \item X and Y are nats, with X representing a nat less than Y represents
+
+    \item X and Y are both variables
+\end{itemize}
+
+
+In the case where X is a variable, and Y is a nat, Prolog returns X as a series of nats less than Y, starting from z in increasing order.
+
+For the case where Y is a variable and X is a nat, Prolog returns Y as a single value of s(s(...s(\_)...)) with 1 more s(...) in Y than in X.
+
+For the case where both are Nats, and X is less than Y, Prolog simply returns true.
+
+For the case where both are variables, Prolog returns X as a series of nats, starting from z and increasing by 1, and Y as a series s(...s(\_)...) always with 1 more s(...) than in X.
+
+We argue that this is correct because this input has been tested for values 0-10 for both X and Y in all four cases, with the results the same as the cases explained above.
+
+Additionally, less/2 FAILS if either input is not of the form s(s(...(z)...)) or s(s(...(\_)...) or a variable.
+For inputs of the form s(...(\_)...), which technically mean $n^{\text{\tiny th}}$ successor of any nat, both X and Y are always satisfied, so Prolog returns X from z upwards, and Y from s(s(...(\_)...)) ${n+1}^{\text{\tiny th}}$ successor and upwards. We would argue that this is desirable, and is correct, as it is in line with the stated assumption.
+
+\lstset{language=Prolog, frame=lines} \begin{lstlisting}[caption={less/2 definition}]
+less(z, s(_)).
+less(s(X), s(Y)) :- less(X, Y).
+\end{lstlisting}
+
+\section{checkset/1}
+The assumption for checkset(X) is that it returns TRUE if X is a valid nats set. There is no necessary behavior for X as an uninitiated variable.
+There are two success cases for checkset(X):
+\begin{itemize}
+
+    \item X is the empty list []
+
+    \item X is a list containing only nats in strictly ascending order, i.e. if we have [A$\vert$[B$\vert$[Tail]], less(A, B) is TRUE.
+\end{itemize}
+
+
+checkset FAILS if the elements are out of order, if the list contains an element which is NOT a nat, or if the list contains duplicates.
+
+We argue that this is correct because it has been tested for permutations of lists up to size 5 of values 0-5 (see the test predicates in the last section of the document).
+
+If X is left as a variable, prolog attempts to create a list. First comes the empty set, followed by the singleton [z], then [s(z)] and so on in this manner. This is not incorrect, as these are all valid sets of size 1. Coupling checkset(X) with length(X,Y) gives valid sets of the specified size, although they all begin [z,s(z),s(s(z))...] with only the last item in the list incrementing every iteration. Again, this is not wrong. They are valid sets of the given size.
+
+\lstset{language=Prolog, frame=lines} \begin{lstlisting}[caption={checkset/1 definition}]
+checkset([]).
+checkset([X]) :- less(X, _).
+checkset([Head|[First|Tail]]) :- less(Head, First),
+                                 checkset([First|Tail]).
+  
+\end{lstlisting}
+
+
+\section{ismember/3}
+The assumption for ismember(X,Y,Val) is that Val is yes if X is a nats element of nats set Y, and no if X is a nats element that does NOT belong to nats set Y. Furthermore, leaving X and Val as variables, X and Val are expected to run through every possible value of the given set Y, from X = z to X = s(+(n...(\_)...)) where n is the highest value in Y, returning the appropriate yes or no value. Finally, our version implements the ability to leave Y as a variable as well, and have ismember generate the appropriate sets Y paired with the appropriate values for Val and/or X.
+ismember should actually always succeed, as long as X is a nat, Val is either yes or no, and Y is a list of nats (unfortunately checking if it is a set destroys our ability to generate sets, somewhat paradoxically.) ismember3, however, switches this. By keeping the coding simpler and not requiring ismember to return a set Y for a given X and Val, we can ensure that ismember fails to unify when given a non-set Y by requiring checkset(Y) to be included.
+
+We argue that this is correct because it has been tested for lists of nats Y of size 5 for values 0-10, compared against nats X for values 0-15, with the results always as expected. In addition, the sets generated by ismember are the simplest possible sets that meet the conditions layed out by X and Val, although perhaps not in the expected order.
+
+\subsection{Execution of ismember(N,[s(z),s(s(s(z))),A).}
+Running the example code of $\vert$ ?- ismember(N,[s(z),s(s(s(z))),A). yields the following process:
+\begin{enumerate}
+
+    \item  prolog unifies ismember(N,S,A) with ismember2(N,S,A,z).
+
+    \item  prolog attempts to unify ismember2(N,S,A,z) with (\_,[],no,\_).
+
+         No success, because S is non-empty.
+
+    \item  prolog attempts to unify (N,S,A,z) with (Num, [Num|\_], yes, \_).
+
+         Since N is a variable, N unifies with Num, and A unifies with yes.
+
+    \item  prolog next attempts to unify (N,S,A,z) with (Num, [Head|Tail], Val, Last).
+
+         Unification is possible, but now we check the additional constraints that Head is less than Num, which forces num to take the value s(s(\_)) for the moment, and that Last is less than Head, which forces prolog to stay within the constraints of a set. Finally, we attempt to recursively unify with (Num, Tail, Val, Head). Success.
+
+    \item  Attempt (N,S,A,s(z)) with (\_,[],no,\_).
+
+         No success because S is non-empty.
+
+    \item   Attempt (N,S,A,s(z)) with (Num, [Num|\_], yes, \_).
+
+         Success, because N = s(s(\_)), and S = [s(s(s(z)))$\vert$\_] can be unified, so that N = s(s(s(z))).
+
+    \item   Attempt (N,S,A,s(z)) with (Num, [Head$\vert$Tail], Val, Last).
+
+         Unification is possible. Additional constraints require that N, currently s(s(\_)), is now less than Head, currently s(s(s(z))). Thus N is updated to s(s(s(s(\_)))). Finally, recurse.
+
+    \item   Attempt (N,S,A,s(s(s(z)))) with (\_,[],no,\_).
+
+         Success, because S is now the empty set.
+
+    \item   Attempt (N,S,A,s(s(s(z)))) with (Num, [Num|\_], yes, \_).
+
+         No success, because S is the empty set.
+
+    \item  Attempt (N,S,A,s(s(s(z)))) with (Num, [Head$\vert$Tail], Val, Last).
+
+         No success, because S is the empty set.
+
+    \item  Attempt (N,S,A,s(s(s(z)))) with (Num, [Head$\vert$\_], no).
+
+         No success, because S is the empty set.
+
+    \item  Backtrack to step 7.
+
+    \item  Attempt (N,S,A,s(z)) with (Num, [Head$\vert$\_], no).
+
+         Unification is possible. N is s(s(\_)), Head is s(s(s(z))). The requirement that Num is less than Head forces n to take the value s(s(z)). A returns no.
+
+    \item  Backtrack to step 4.
+
+    \item  Attempt (N,S,A,z) with (Num, [Head$\vert$\_], no).
+
+         Unification is possible. N is any variable. Head is s(z). the constrain that Num is less than Head forces N to take the value z. A returns no.
+
+    \item  Backtrack to 1.
+
+    \item  Attempt ismember(N,[z$\vert$S],A) with ismember2(N,S,A,z).
+
+         No success, because z is not the first element of our set.
+
+    \item  Possibilities are exhausted, prolog returns no.
+\end{enumerate}
+
+The reason we have included this additional ``last'' variable is so that if we give a variable for the set, we can correctly generate sets.
+The example code works precisely the same way with ismember3, with the exception that we don't pass the previous values down, as there is no need to since we are not worried about set generation.
+
+\lstset{language=Prolog, frame=lines} \begin{lstlisting}[caption={ismember/3 definition}]
+ismember(Element, Set, Value) :- 
+                        ismember2(Element, Set, Value, z).
+                        
+ismember(Element, [z$\vert$Set], Value) :- 
+                        less(z, Element),
+                        ismember2(Element, Set, Value, z).
+
+ismember2(_, [], no, _).
+ismember2(Num, [Num$\vert$_], yes, _).
+
+ismember2(Num, [Head$\vert$Tail], Val, Last) :- 
+                        less(Head, Num),
+                        less(Last, Head), 
+                        ismember2(Num, Tail, Val, Head).
+                        
+ismember2(Num, [Head$\vert$_], no, _) :- less(Num, Head).
+\end{lstlisting}
+
+\lstset{language=Prolog, frame=lines} \begin{lstlisting}[caption={ismember3/3 definition}]
+ismember3(Element, Set, Value) :- ismember4(Element, Set, Value), 
+                                  checkset(Set).
+
+ismember4(_, [], no).
+
+ismember4(Num, [Num|_], yes).
+
+ismember4(Num, [Head|Tail], Val) :- 
+            less(Head, Num), 
+            ismember4(Num, Tail, Val).
+            
+ismember4(Num, [Head|_], no) :- less(Num, Head).
+\end{lstlisting}
+
+
+\section{union/3}
+Here we assume for union(X1,X2,U) that when both X1 and X2 are valid nats sets, then the value of U is also a valid Nats set.
+In the case that either X1 or X2 is not a valid set, then union/3 fails.
+
+The union/3 definition calls the second predicate union2/3 followed by checkset/1 on both the supplied input sets. The reason for this ordering is that if checkset/1 is called before union2/3, when either of the input sets is empty, checkset/1 will generate a singleton or empty set.
+
+There are 6 success cases for union(X1,X2,U):
+
+\begin{itemize}
+
+    \item Both X1 and X2 are empty sets: the union U of two empty sets is the empty set.
+
+    \item X1 is the empty set, X2 is non-empty. U is unified with the non-empty set X2.
+
+    \item The inverse of the latter case. That is, X2 is empty, and X1 is non-empty, U is unified with X1. These first three cases involving empty sets are made so that Prolog does not repeat itself.
+
+    \item If the Head of X1 is lesser than the head of X2, add it to the front of the Union.
+
+    \item As above, with the order reversed.
+
+    \item If the Head is the same for X1 and X2, add it only once to U.
+
+\end{itemize}
+We argue that union(X,Y,Z) is correct because it has been tested using lists of nats of length 5, from values 0-5, for X, Y, and Z, and alternately using one of each of the three as variables instead of fixed. The results were always what was expected. Additionally, when given only a set Z and leaving X and Y variables, all possible correct combinations are returned for X and Y. When all three are uninstantiated variables, X remains the empty set [], while Y and Z progress through the singletons from [z] upwards. When providing either X or Y (Without loss of generality, X is provided), and leaving Y and Z uninstantiated, Y progresses through the singletons from one higher than the highest value of X. This occurs because of the ordering of the union2 predicates. Empty sets and small sets take precedence, so those are the first sets to be returned. Since there are infinitely many cases, we only see Y return singleton values!
+\lstset{language=Prolog, frame=lines} \begin{lstlisting}[caption={union/3 definition}]
+union(Left, Right, Union) :- 
+            union2(Left, Right, Union),
+            checkset(Left), checkset(Right).
+\end{lstlisting}
+\lstset{language=Prolog, frame=lines} \begin{lstlisting}[caption={union2/3 definition}]
+union2([], [], []).
+union2([], [H|T], [H|T]).
+union2([H|T], [], [H|T]).
+union2([L|Left], [R|Right], [L|Tail]) :- 
+            less(L, R),
+            union2(Left,[R|Right], Tail).
+union2([L|Left], [R|Right], [R|Tail]) :- 
+            less(R, L),
+            union2([L|Left], Right, Tail).
+union2([H|Left], [H|Right], [H|Tail]) :- 
+            union2(Left, Right, Tail).
+\end{lstlisting}
+
+\section{intersection/3}
+The intersection of two sets is defined in a similar manner to the definition of union. The success cases are also similar:
+\begin{itemize}
+    \item The intersection of two empty sets is the empty set
+
+    \item The intersection of the empty set and nonempty set X is the empty set (regardless of which of the supplied sets is empty or nonempty)
+
+    \item The head of the first set is less than that of the second, in which case it is discarded (and the computation continues with the remainder)
+    
+    \item As before with the sets reversed.
+
+    \item If the head of both lists is the same, add it only once to the result
+
+\end{itemize}
+As before we assume that the resulting set is a valid nats set, given 2 valid nats sets. If either input sets is not valid then the computation will fail as it cannot unify.
+
+We argue that intersection(X,Y,Z) is correct because it has been tested using lists of nats of length 5, from values 0-5, for X, Y, and Z, and alternately using Z as a variable. The results were always correct sets. Interestingly, when using either X or Y as variables, and providing the other two with values, prolog returns local stack overflow errors. This is because in the search for a possible unification, for example $intersection(X, [s(z),s(s(z))], [s(z),s(s(z))])$, prolog checks sets of the form $[z,s(z)] -> [z,s(s(z))] -> [z, s(s(s(z)))] -> ...$ infinitely. This is undesirable, but not wrong as the behavior of the predicate when given uninstantiated variables is not defined. Amusingly, given Z and either X or Y (WLOG, Y is uninstantiated, X is provided) as uninstantiated variables, Z remains the empty set [], Y begins as the empty set [], and then Y progresses sequentially through the singletons from one higher than the highest value of X upwards. It's not wrong, but it does look funny. The reason this occurs is because of the way the intersection2 predicates are ordered. Since the empty set cases all occur higher than any other, those are the ones that take precedence. Since there are infinitely many, we will always recieve an empty Z in return. If the ordering of code was re-arranged, we would recieve a different group of sets.
+
+\lstset{language=Prolog, frame=lines} \begin{lstlisting}[caption={intersection/3 definition}]
+intersection(Left, Right, Intersection) :- 
+             intersection2(Left, Right, Intersection), 
+             checkset(Left), 
+             checkset(Right).
+    
+\end{lstlisting}
+\lstset{language=Prolog, frame=lines} \begin{lstlisting}[caption={intersection2/3 definition}]
+intersection2([], [], []).
+intersection2([], [_|_], []).
+intersection2([_|_], [], []).
+
+intersection2([L|Left], [R|Right], Tail) :- 
+                    less(L, R), 
+                    intersection2(Left, [R|Right], Tail).
+                
+intersection2([L|Left], [R|Right], Tail) :- 
+                    less(R, L),
+                    intersection2([L|Left], Right, Tail).
+                    
+intersection2([H|Left], [H|Right], [H|Tail]) :-
+                    intersection2(Left, Right, Tail).
+\end{lstlisting}
+
+\section{Testing predicates}
+For the purposes of testing quality, we created a few predicates:
+
+\begin{itemize}
+
+    \item i2n(Int,Nat)
+
+    \item minimum(Val,List)
+
+    \item remove(Val,Prevlist,Outlist)
+
+    \item popmin(Prevlist,Outlist,Minimumval)
+
+    \item genset(List,Set)
+
+    \item genlist(List,Natlist)
+
+    \item genintlist(Min,Max,Length,List)
+
+    \item between(Min,Max,Val)
+
+    \item genints(Min,Max,List)
+
+    \item genlists(Min,Max,Natlist)
+
+    \item gensets(Min,Max,Set)
+\end{itemize}
+
+
+The behavior of each of these functions is documented in the code. They make use of several of prolog's built-in predicates, but since they are functions we only used to test our code, we do not consider this to be a problem.
+\end{document}

@@ -21,6 +21,8 @@ grandFather(X,Y) :- father(X,Z), parent(Z,Y).
 
 haveChild(X,Y) :- parent(X,Z), parent(Y,Z).
 
+ancestor(X,Y) :- parent(X,Y).
+
 ancestor(X,Y) :- parent(X,Z), ancestor(Z,Y).
 
 brother(X,Y) :- parent(Z,X), 
