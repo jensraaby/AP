@@ -1,4 +1,4 @@
 AP
 ==
 
-Advanced Programming
+Advanced Programming. Haskell, Prolog & Erlang.
