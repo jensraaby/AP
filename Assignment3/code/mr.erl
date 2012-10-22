@@ -25,7 +25,7 @@ stop(Pid) ->
 % Send the data
 job(CPid, MapFun, RedFun, RedInit, Data) ->
     info(CPid,{mapper_setup,MapFun}),
-    io:format("Input: ~p ~n", [Data]),
+    % io:format("Input: ~p ~n", [Data]),
     info(CPid,{data,Data}),
     % getting the result should be synchronous
     Result = rpc(CPid,{reducer_setup,RedFun,RedInit,length(Data)}),
@@ -163,8 +163,7 @@ mapper_loop(Reducer,Fun) ->
             
         {data, D} -> % process and send to reducer
             data_async(Reducer,Fun(D)),
-            io:format("Mapper - got data: ~p~n",[D]), 
-            
+            % io:format("Mapper - got data: ~p~n",[D]), 
             mapper_loop(Reducer,Fun);
             
         Unknown ->

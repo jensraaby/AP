@@ -7,6 +7,7 @@ test_readmxm(File) ->
     {Words,_} = read_mxm:from_file(File),
     length(Words).
 
+
 test_jens() ->
     {ok,MR} = mr:start(5),
     mr:stop(MR).
@@ -25,7 +26,6 @@ test_sum() ->
                                lists:seq(1,10)),
     mr:stop(MR),
     {Sum,Fac}.
-    
 % test() ->
 %     % Read in the test file
 %     
