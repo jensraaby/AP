@@ -1,0 +1,74 @@
+\documentclass{article} 
+\usepackage{fancyhdr,subfig,graphicx,psfrag,amsfonts,textcomp,mathtools,amsmath,hyperref,listings} 
+
+\title{Advanced Programming 2012\\
+Assignment 3 - Erlang} 
+\author{Erik J. Partridge \& Jens P. Raaby}
+
+\begin{document} 
+\maketitle
+
+
+\section{Part 1 - Map Reduce}
+The implementation of our map-reduce framework is contained within the file mr.erl. As specified in the assignment, it exports three functions: start/1, job/5 and stop/1. It is based on the skeleton file supplied.
+
+\subsection{Design \& Quality Assessment}
+\subsubsection{Start and init functions}
+Start very simply creates a reducer and set of specified number of mappers, then passes these to a newly spawned coordinator process, which is returned in a tuple with `ok'.
+
+\subsubsection{job function}
+This function performs various message passing duties. First, the mapping function is sent synchronously to the coordinator. This is so that the coordinator must return an ok message before the data is sent (in some cases, the mappers may not have received the mapping function before they receive data \- this is very unlikely in our case, but if there was network latency this could pose a problem).
+After printing the size of the input data to the shell, the data is asynchronously sent to the coordinator, which then starts the send\_data function with the supplied data. This sequentially passes the data to the mapper nodes. 
+The job function finally sends a remote procedure call to the coordinator with the reduce function, its initial accumulator value and the length of data (used to detect when all data has been received from the mappers). The reason for the RPC in this instance is that the job is not going to return a value until the computation is complete.
+
+\subsubsection{stop}
+The stop\/1 method sends the specified coordinator process a remote procedure call with the message `stop'. This then passes an asynchronous stop message to each mapper and the reducer. The mappers and reducers exit their loops when they receive the stop message. The mapper and reducer processes are also linked to the coordinator in the coordinator\_loop function. 
+
+\subsubsection{Loop functions}
+The coordinator, mapper and reducer loops are all fairly similar in implementation. They loop until the stop message is received. Further discussion is in the comments in the code.
+
+\subsection{Testing}
+In order to test the map reduce framework I implemented the suggested simple test in the file test\_mr.erl. Having manually calculated the results, I verified they matched. Since the pattern matching is fairly robust I trust that the results were reliable. I would have liked to try writing better tests but the second part of the assignment provided ample opportunity to put the framework to the test.
+
+\section{Part 2 - Lyric Database}
+These parts are contained in the file music\_analysis.erl. It exports functions which take a filename as a parameter to specify the music dataset file. We used the test data for developing, a small file for verification, and the training data for performance checking.
+
+We tested the functions with the timer:tc method and achieved reasonable results (sub 20 seconds) on the test data for all the queries. The larger training data set took quite a bit longer, especially the reverse index.
+
+\subsection{Total word count}
+The function simply takes each Track, sums the counts of all words and reduces by summing all the sums. See the code for further elaboration.
+\subsection{Average word counts}
+Similar to above,
+\subsection{grep}
+grep(Word,Mxminputfile)
+The grep function's purpose is to take as input a word and a file, and return a list of all MSD track IDs for tracks that contain the given word. Since we have track ID and mxm ID in our file, I wasn't entirely sure what MSM ID was, so I used both. That is, a successful run of returns
+{ok,[{trackid 1, mxmid 1},{trackid 2, mxmid 2}|...]}
+The function works by making use of our mr:job/5 function. Our map function grep\_checkmember/2 returns either false or a singleton containing the track/mxm id tuple. If our given word is not found in the track's list, then we return false. If it is, then we return the singleton. We ``trick'' the mapper into using two arguments by calling grep\_checkmember by way of an anonymous function:
+fun (X) -> grep\_checkmember(Wordkey,X) end
+so that way our Key word can be specified.
+The reduce function grep\_merge/2 works by combining two lists, with no real ordering. The only reason it is not done with just the ++ operator is because of the partially boolean map function. It certainly was not *necessary* to do it this way, but it works just fine.
+There is light error-handling: if the word is not present in the wordbank, grep returns a fail. Other assumptions are that the user types in lowercase and spells correctly.
+I argue that this algorithm is correct because it was tested on three seperate mxm files: mxm\_small.txt, mxm\_dataset\_text.txt, and mxm\_dataset\_text\_2.txt. The algorithm gave expected results for cases small enough to manually check, and worked quickly enough for larger cases.
+
+\subsection{Reverse index}
+reverse(InputFile)
+The reverse function takes as input a mxm text file and returns a dictionary of tracks with words as keys. The output of a successful run is
+{ok,<<dict structure>>}, where the keys are String words, and the values are {{Trackid,Mxmid},Wordoccurences}. The occurences are kept so that the dictionary can technically answer the same questions both in reverse index and normal mode.
+The map function reverse\_tuple\_dict/1 takes as input an mxm track and returns a dictionary where the keys are all of the word numbers in the track and the value is the aforementioned tuple.
+The reduce function is reverse\_merge/2, which merges two dictionaries together. The final touch is to turn the word numbers into the words they represent.
+The algorithm has been tested on three seperate mxm files: mxm\_small.txt, mxm\_dataset\_text.txt, and mxm\_dataset\_text\_2.txt. The algorithm gave expected results for cases small enough to manually check, and worked quickly enough for larger cases. This is the basis for my argument of correctness.
+
+\subsection{Advantages and disadvantages of using a reverse index}
+
+speculation:
+
+
+The benefits of a reverse index dictionary are that individual words can be *easily* looked up. They are simply retrieved from the dictionary. In such a way, songs that contain similiar words can be easier to find. There is no difference in performance for count, but the average functions become much more difficult.
+
+The advantage of the reverse index is for functions like the grep, which allow a much faster lookup instead of having to parse the whole dataset for each execution - the index is instead readily available as a dict.
+
+The disadvantages include that we have to store a second index and update it when the original data changes. 
+\section{Part 3}
+Not enough time, we are afraid :(.
+
+\end{document}

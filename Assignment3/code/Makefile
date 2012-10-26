@@ -11,7 +11,7 @@ ERL = erl -boot start_clean
 # to the end of the line and continue on the next line
 # Edit the lines below
 #MODS = mr test_mr read_mxm
-MODS = mr test_mr read_mxm
+MODS = mr test_mr read_mxm music_analysis
 # The first target in any makefile is the default target.
 # If you just type "make" then "make all" is assumed (because
 #   "all" is the first target in this makefile)
